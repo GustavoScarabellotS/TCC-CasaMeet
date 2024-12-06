@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.5.0/remixicon.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&display=swap");
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    li, a, button {
+      font-family: "Montserrat", sans-serif;
+      font-weight: 500;
+      font-size: 16px;
+      color: black;
+      text-decoration: none;
+    }
+
+    .aimg {
+        position: relative;
+        top: 7px;
+    }
+
+    header {
+        display: flex;
+        border-style: solid;
+        border-color: #419C64;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 6%;
+        height: 100px; 
+      }
+
+    .logo {
+        cursor: pointer;
+        width: 200px; 
+        height: auto; 
+        margin-right: 20px;
+    }
+
+    header .nav__links {
+        display: flex;
+        gap: 60px;
+    }
+
+    .nav__links {
+      list-style: none;
+      display: flex;
+      gap: 60px;
+      margin-right: 165px;
+    }
+
+    .nav__links li a {
+      transition: all 0.3s ease;
+    }
+
+    .nav__links li a:hover {
+      color: #28894d;
+    }
+
+    .nav__linksII {
+        list-style: none;
+        display: flex;
+        gap: 60px;
+      }
+  
+      .nav__linksII li a {
+        transition: all 0.3s ease;
+      }
+  
+      .nav__linksII li a:hover {
+        color: #28894d;
+      }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      position: relative; 
+    }
+
+    .actions a.cta button {
+        margin-left: 0; 
+        font-size: 14px; 
+        
+      }
+
+    a i {
+      font-size: 2rem;
+      color: black;
+    
+    }
+
+    a button {
+      color: white;
+      padding: 9px 25px;
+      background-color: #419C64;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #d3d3d3;
+      color: #1e1f1e;
+    }
+
+    .loading-screen {
+        display: none; 
+        position: fixed; 
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0; 
+        transform: scale(0.8); 
+    }
+    
+    .loading-image {
+        width: 400px; 
+        height: auto; 
+    }
+
+    .menu-opcoes {
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      left: 60%; 
+      background-color: white; 
+      border-radius: 5px; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+      padding: 10px; 
+      z-index: 1000; 
+    }
+    
+    .menu-opcoes a, .menu-opcoes button {
+      display: block; 
+      padding: 10px; 
+      color: black; 
+      text-decoration: none; 
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+    
+    .menu-opcoes a:hover, .menu-opcoes button:hover {
+      background-color: #f0f0f0;
+    }
+    
+    .modal {
+        display: none; 
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%; 
+        height: 100%; 
+        background-color: rgba(0, 0, 0, 0.7); 
+        justify-content: center; 
+        align-items: center;
+        z-index: 1001; 
+    }
+    
+    .modal-content {
+        background-color: white; 
+        padding: 40px; 
+        border-radius: 8px; 
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 12px; 
+        width: 90%; 
+        max-width: 500px; 
+    }
+    
+     input[type=text], input[type=tel], input[type=date] {
+         width:-webkit-fill-available; 
+         margin-bottom:.5em; 
+         padding:.5em; 
+         border:none; 
+         border-radius:.25em; 
+         box-shadow: rgba(0,0,0,.1) 0px 4px 8px inset; 
+     }
+    
+     button[type=submit], button[type=button] {
+         background-color:#419C64; 
+         color:white; 
+         padding:.75em;
+         border:none; 
+         border-radius:.25em; 
+         cursor:pointer; 
+     }
+    
+     button[type=submit]:hover,
+     button[type=button]:hover {
+         background-color:#28894d; 
+     }
+   </style>
+</head>
+<body>
+<header>
+   <a href="/" class="aimg"> <img class="logo" src="https://i.ibb.co/HdGPGtz/Casa-Meet-logo.png" alt="CASAMEET"></a>
+    <nav>
+        <% if (typeof usuario === 'undefined' || !usuario) { %>
+            <ul class="nav__links">  
+                <li><a href="/">Home</a></li>
+                <li><a href="/cadastro">Junte-se</a></li>
+                <li><a href="/sobre">Sobre</a></li>
+            </ul>
+        <% } else { %>
+            <ul class="nav__linksII">
+                <li><a href="/">Home</a></li>
+                <li><a href="/listar-imoveis">Propriedades</a></li>
+                <li><a href="/conversas" class="chat-link">Conversas</a></li>
+                <li><a href="/sobre">Sobre</a></li>
+            </ul>
+        <% } %>
+    </nav>
+
+    <div class="actions">
+        <% if (usuario) { %>
+            <a class="cta" href="/perfil">
+                <button>Editar Perfil</button>
+            </a>
+        <% } %>
+
+        <a id="menu-icon" href="/login">
+            <i class="ri-user-line"></i>
+        </a>
+
+        <div id="loading-screen" class="loading-screen">
+            <div style="text-align: center; color: white;">
+                <img src="https://i.ibb.co/VN2RmXf/Casa-Meet-logo-1.png" alt="Loading..." class="loading-image">
+                <p id="loading-text" style=" font-size: 1.5rem;">Deslogando</p>
+            </div>
+        </div>
+        
+        <div id="menu-opcoes" class="menu-opcoes">
+            <% if (usuario) { %>
+                <% if (usuario.classficacao === "1" || usuario.classficacao === "2") { %>
+                    <a href="/denuncia">Ver denúncias</a>
+                <% } %>
+                
+                <% if (usuario.classficacao !== "2") { %>
+                    <a href="/minhas-denuncias">Minhas Denúncias</a>
+                    <a href="/conversas">Minhas Conversas</a>
+                    <a href="#" id="criar-imovel">Criar Imóvel</a>
+                    <a href="/meus-imoveis">Meus Imóveis</a>
+                <% } %>
+                
+                <a href="/report">Denunciar</a>
+                <a href="/listar-imoveis">Imóveis</a>
+                <a href="/logout">Logout</a>
+                <button id="toggle2fa">Ativar/Desativar 2FA</button>
+            <% } else { %>
+                <a href="/login">Login</a>
+                <a href="/cadastro">Cadastrar</a>
+            <% } %>
+        </div>
+    </div>
+</header>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h2>Cadastro de Dono</h2>
+        <form id="cadastroDonoForm">
+            <input type="text" name="nome" placeholder="Nome completo" required />
+            <input type="text" name="cpf" placeholder="CPF" required oninput="formatarCPF(event)" />
+            <input type="text" name="endereco" placeholder="Endereço" required />
+            <input type="tel" name="telefone" placeholder="Telefone" required />
+            <input type="date" name="datanasc" placeholder="Data de Nascimento" required />
+            <button type="submit">Cadastrar</button>
+            <button type="button" id="voltar-btn">Voltar</button> 
+        </form>
+    </div>
+ </div>
+
+<script>
+const verPerfilBtn = document.querySelector('.cta');
+const menuIcon = document.getElementById('menu-icon');
+const menuOpcoes = document.getElementById('menu-opcoes');
+const usuarioLogado = <%= !!usuario %>;
+const usuarioClassificacao = "<%= usuario ? usuario.classficacao : 'null' %>";
+let isDono = "<%= usuario && usuario.isDono ? 'true' : 'false' %>";
+
+verPerfilBtn.addEventListener('click', (event) => {
+   if (!usuarioLogado) {
+       event.preventDefault();
+       alert("Você precisa estar logado para acessar seu perfil.");
+   }
+});
+
+function formatarCPF(event) {
+    let input = event.target;
+    let value = input.value.replace(/\D/g, ''); 
+
+    
+    if (value.length > 11) {
+        value = value.slice(0, 11);
+    }
+
+    
+    if (value.length <= 11) {
+        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+
+    input.value = value;
+}
+
+menuIcon.addEventListener('click', (event) => {
+   event.preventDefault();
+   menuOpcoes.style.display = (menuOpcoes.style.display === 'block') ? 'none' : 'block';
+});
+
+window.addEventListener('click', (event) => {
+   if (!menuIcon.contains(event.target) && !menuOpcoes.contains(event.target)) {
+       menuOpcoes.style.display = 'none';
+   }
+});
+
+
+document.getElementById('criar-imovel').addEventListener('click', async (event) => {
+   event.preventDefault();
+   
+   try {
+       const response = await fetch('/verificar-dono', {
+           method: 'GET',
+           headers: {
+               'Content-Type': 'application/json',
+           }
+       });
+       
+       const data = await response.json();
+       
+       if (data.isDono) {
+           window.location.href = '/criar-imovel';
+       } else {
+           document.getElementById('modal').style.display = 'flex';
+       }
+   } catch (error) {
+       console.error('Erro ao verificar status de dono:', error);
+       alert('Erro ao verificar suas permissões. Tente novamente.');
+   }
+});
+
+document.querySelector('a[href="/logout"]').addEventListener('click', function(event) {
+    event.preventDefault(); 
+    
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingText = document.getElementById('loading-text');
+    
+    loadingScreen.style.display = 'flex';
+    
+    let opacity = 0;
+    let scale = 0.8;
+    let animationProgress = 0;
+    let points = ''; 
+    
+    function animateLoadingScreen() {
+        if (animationProgress < 1) {
+            animationProgress += 0.05; 
+            opacity = Math.min(animationProgress, 1);  
+            scale = 0.8 + (0.2 * animationProgress); 
+
+            loadingScreen.style.opacity = opacity; 
+            loadingScreen.style.transform = `scale(${scale})`; 
+
+            requestAnimationFrame(animateLoadingScreen); 
+        } else {
+            let dotCounter = 0;
+            const dotInterval = setInterval(() => {
+                dotCounter++;
+                points = '.'.repeat(dotCounter);
+                loadingText.textContent = `Deslogando${points}`;
+                if (dotCounter >= 3) {
+                    dotCounter = 0;
+                }
+            }, 500); 
+            setTimeout(() => {
+                clearInterval(dotInterval); 
+                window.location.href = '/logout'; 
+            }, 2000); 
+        }
+    }
+    
+    animateLoadingScreen(); 
+});
+
+document.getElementById('cadastroDonoForm').addEventListener('submit', async (e) => {
+   e.preventDefault();
+   
+   const submitButton = e.target.querySelector('button[type="submit"]');
+   if (submitButton.disabled) {
+       return;
+   }
+   submitButton.disabled = true;
+   submitButton.textContent = 'Cadastrando...';
+   
+   try {
+       const formData = new FormData(e.target);
+       const data = Object.fromEntries(formData.entries());
+       
+       const response = await fetch('/cadastrar-dono', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+           },
+           body: JSON.stringify(data)
+       });
+       
+       const result = await response.json();
+       if (result.success) {
+           alert('Cadastro de dono realizado com sucesso!');
+           document.getElementById('modal').style.display = 'none';
+           window.location.href = '/criar-imovel';
+       } else {
+           alert('Erro ao cadastrar dono: ' + (result.error || 'Erro desconhecido'));
+           submitButton.disabled = false;
+           submitButton.textContent = 'Cadastrar';
+       }
+   } catch (error) {
+       console.error('Erro ao cadastrar dono:', error);
+       alert('Erro ao processar sua solicitação. Tente novamente.');
+       submitButton.disabled = false;
+       submitButton.textContent = 'Cadastrar';
+   }
+});
+
+document.getElementById('toggle2fa').addEventListener('click', async () => {
+  try {
+      const response = await fetch('/toggle-2fa', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+      });
+      const data = await response.json();
+      if (data.success) {
+          const message = data.duasEtapasAtivado 
+              ? '2FA ativado com sucesso! Esta atividade aumenta a segurança da sua conta.' 
+              : '2FA desativado com sucesso! Você pode reativá-lo a qualquer momento.';
+          alert(message);
+      } else {
+          console.error('Erro ao alternar 2FA:', data.error);
+          alert('Erro ao alternar 2FA: ' + (data.error || 'Erro desconhecido'));
+      }
+  } catch (error) {
+      console.error('Erro ao fazer a requisição:', error);
+      alert('Erro ao tentar alternar 2FA: ' + error.message);
+  }
+});
+
+document.getElementById('voltar-btn').addEventListener('click', () => {
+   document.getElementById('modal').style.display = 'none'; 
+});
+
+document.getElementById('anunciar-agora').addEventListener('click', async (event) => {
+   event.preventDefault();
+   
+   if (!usuarioLogado) {
+       window.location.href = '/login';
+       return;
+   }
+   
+   try {
+       const response = await fetch('/verificar-dono', {
+           method: 'GET',
+           headers: {
+               'Content-Type': 'application/json',
+           }
+       });
+       
+       const data = await response.json();
+       
+       if (data.isDono) {
+           window.location.href = '/criar-imovel';
+       } else {
+           document.getElementById('modal').style.display = 'flex';
+       }
+   } catch (error) {
+       console.error('Erro ao verificar status de dono:', error);
+       alert('Erro ao verificar suas permissões. Tente novamente.');
+   }
+});
+
+document.querySelector('a[href="/listar-imoveis"]').addEventListener('click', function(event) {
+    if (!usuarioLogado) {
+        event.preventDefault();
+        window.location.href = '/login';
+    }
+});
+</script>
+
+</body>
+</html>
+

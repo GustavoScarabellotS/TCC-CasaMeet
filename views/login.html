@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(to bottom right, #ffffff,#419C64);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #loginFormContainer {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            width: 100%;
+            max-width: 900px;
+            height: 550px;
+            overflow: hidden;
+        }
+
+        .left-side {
+            background-color: #2f814b;
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            width: 50%;
+        }
+
+        .left-side h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .left-side p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .decorative-shape {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 100px;
+            height: 100px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .decorative-shape::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .right-side {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 50%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        #loginForm {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #loginForm input {
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        #loginForm button {
+            background-color: #157b38;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #loginForm button:hover {
+            background-color: #354638;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #backButton {
+            color: #16a34a;
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        #backButton:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            #loginFormContainer {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .left-side, .right-side {
+                width: 100%;
+            }
+
+            .left-side {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginFormContainer">
+        <div class="left-side">
+            <h1 style="color: #ffffff;">Você Voltou!</h1>
+            <p>Entre para encontrar o imovel perfeito para você!</p>
+            <div class="decorative-shape"></div>
+        </div>
+        <div class="right-side">
+            <h1>Login</h1>
+            <form id="loginForm">
+                <input type="email" name="loginemail" placeholder="E-mail" required>
+                <input type="password" name="loginsenha" placeholder="Senha" required>
+                <div id="twoFactorField" style="display: none;">
+                    <input type="text" name="twoFactorCode" placeholder="Código 2FA">
+                </div>
+                <button type="submit">Entrar</button>
+            </form>
+            <a href="/cadastro" id="backButton">Novo Aqui? Crie uma Conta!</a>
+            <a href="/" id="backButton">Voltar para a página inicial</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const loginData = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.requireTwoFactor) {
+                        alert(data.message);
+                        document.getElementById('twoFactorField').style.display = 'block';
+                    } else if (data.success) {
+                        alert('Login bem-sucedido!');
+                        window.location.href = '/';
+                    } else {
+                        alert(data.error || 'Erro no login');
+                    }
+                } else {
+                    alert(data.error || 'Erro no login');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao tentar fazer login');
+            }
+        });
+    </script>
+</body>
+</html>

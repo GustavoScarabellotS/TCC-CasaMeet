@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Denúncias Fechadas</title>
+</head>
+<body>
+    <h1>Denúncias Fechadas</h1>
+
+    <% if (denuncias && denuncias.length > 0) { %>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Categoria</th>
+                    <th>Usuário Denunciante</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% denuncias.forEach(denuncia => { %>
+                    <tr>
+                        <td><%= denuncia.id %></td>
+                        <td><%= denuncia.categoria %></td>
+                        <td><%= denuncia.Usuario ? denuncia.Usuario.usuario_usuario : 'N/A' %></td>
+                        <td><%= denuncia.datadenuncia %></td>
+                        <td><a href="/denuncia/<%= denuncia.id %>">Ver detalhes</a></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>Não há denúncias fechadas no momento.</p>
+    <% } %>
+    
+    <a href="/denuncia">Ver denúncias abertas</a>
+    <br>
+    <a href="/">Voltar para a página inicial</a>
+</body>
+</html>

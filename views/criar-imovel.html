@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Imóvel</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: left;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .form-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #43a047;
+            box-shadow: 0 0 0 2px rgba(67, 160, 71, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .image-upload {
+            border: 2px dashed #a5d6a7;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .image-upload:hover {
+            border-color: #43a047;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .submit-button {
+            background-color: #43a047;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            background-color: #388e3c;
+        }
+
+        .back-button {
+            background-color: transparent;
+            color: #43a047;
+            border: 1px solid #43a047;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .back-button:hover {
+            background-color: #f1f8e9;
+        }
+
+        #file-name {
+            margin-top: 0.5rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastrar Imóveis</h1>
+        <form action="/imovelcriado" method="POST" enctype="multipart/form-data">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="NomeImovel">Nome do Imóvel</label>
+                    <input type="text" id="NomeImovel" name="NomeImovel" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Preco">Preço</label>
+                    <input type="text" id="Preco" name="Preco" required oninput="formatarPreco(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="CEP">CEP</label>
+                    <input type="text" id="CEP" name="CEP" pattern="[0-9]{5}-[0-9]{3}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Categoria">Categoria</label>
+                    <select name="Categoria" id="Categoria" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="casadepraia">Casa de Praia</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="terreno">Terreno</option>
+                        <option value="casa">Casa</option>
+                        <option value="kitnet">Kitnet</option>
+                        <option value="armazem">Armazém</option>
+                        <option value="comercial">Comercial</option>
+                    </select>
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="Descricao">Descrição</label>
+                    <textarea id="Descricao" name="Descricao" required></textarea>
+                </div>
+
+                <div class="form-group form-full">
+                    <label for="Imagem">Imagem do Imóvel</label>
+                    <div class="image-upload" id="image-upload-area">
+                        <input type="file" id="Imagem" name="Imagem" accept="image/*" style="display: none;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#43a047" stroke-width="2">
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Clique para escolher uma imagem</p>
+                        <p id="file-name"></p>
+                        <img id="image-preview" class="image-preview">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="Quartos">Quartos</label>
+                    <input type="number" id="Quartos" name="Quartos" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Banheiros">Banheiros</label>
+                    <input type="number" id="Banheiros" name="Banheiros" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="Andares">Andares</label>
+                    <input type="number" id="Andares" name="Andares" min="1" required>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-button">Cadastrar Imóvel</button>
+        </form>
+        <button onclick="window.location.href='/'" type="button" class="back-button">Voltar</button>
+    </div>
+
+    <script>
+        const imageUploadArea = document.getElementById('image-upload-area');
+        const imageInput = document.getElementById('Imagem');
+        const imagePreview = document.getElementById('image-preview');
+        const fileName = document.getElementById('file-name');
+
+        imageUploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileName.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        const cepInput = document.getElementById('CEP');
+        cepInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); 
+            
+            if (value.length > 8) {
+                value = value.slice(0, 8);
+            }
+            
+            if (value.length >= 5) {
+                value = value.slice(0, 5) + '-' + value.slice(5);
+            }
+            
+            e.target.value = value;
+        });
+
+        const precoInput = document.getElementById('Preco');
+        precoInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, ''); 
+            
+            if (value) {
+                value = Number(value).toLocaleString('pt-BR');
+            }
+            
+            e.target.value = value;
+        });
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const cep = cepInput.value;
+            cepInput.value = cep.replace(/\D/g, '');
+        });
+    </script>
+</body>
+</html>

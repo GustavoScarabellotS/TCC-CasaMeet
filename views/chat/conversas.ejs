@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Conversas</title>
+    <style>
+        :root {
+            --primary-color: #419C64;
+            --primary-hover: #357d50;
+            --background-light: #f8f9fa;
+            --border-color: #e0e0e0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --unread-bg: #e8f5e9;
+            --unread-border: #419C64;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .conversas-lista {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .conversa-item {
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .conversa-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nao-lida {
+            background-color: var(--unread-bg);
+            border-left: 4px solid var(--unread-border);
+        }
+
+        h3 {
+            margin: 0 0 0.5rem 0;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .ultima-mensagem {
+            color: var(--text-secondary);
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .data-mensagem {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .sem-conversas {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            background-color: var(--background-light);
+            border-radius: 8px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                padding: 1rem;
+                border-radius: 0;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .conversa-item {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/navbar') %>
+    
+    <div class="container">
+        <h1>Minhas Conversas</h1>
+        
+        <div class="conversas-lista">
+            <% conversas.forEach(conversa => { 
+                const outroUsuario = conversa.remetente_id === usuarioAtual.id ? 
+                    conversa.Destinatario : conversa.Remetente;
+                const nomeExibicao = outroUsuario.Dono ? outroUsuario.Dono.nome : outroUsuario.usuario_usuario;
+            %>
+                <div class="conversa-item <%= !conversa.lida && conversa.destinatario_id === usuarioAtual.id ? 'nao-lida' : '' %>"
+                     onclick="window.location.href='/chat/<%= outroUsuario.id %>'">
+                    <div>
+                        <h3><%= nomeExibicao %></h3>
+                        <div class="ultima-mensagem"><%= conversa.conteudo.substring(0, 50) %><%= conversa.conteudo.length > 50 ? '...' : '' %></div>
+                        <div class="data-mensagem">
+                            <%= new Date(conversa.data_envio).toLocaleDateString() %>
+                            <%= new Date(conversa.data_envio).toLocaleTimeString() %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+</html> 

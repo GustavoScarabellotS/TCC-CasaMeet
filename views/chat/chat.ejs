@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat com <%= outroUsuario.Dono ? outroUsuario.Dono.nome : outroUsuario.usuario_usuario %></title>
+    <style>
+        :root {
+            --primary-color: #419C64;
+            --primary-hover: #357d50;
+            --background-light: #f8f9fa;
+            --border-color: #e0e0e0;
+            --text-primary: #333;
+            --text-secondary: #666;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--background-light);
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .chat-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .chat-header h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .mensagens {
+            height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--background-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .mensagem {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            max-width: 70%;
+            position: relative;
+            animation: fadeIn 0.3s ease-in;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .mensagem-enviada {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+
+        .mensagem-recebida {
+            background-color: white;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-mensagem {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--background-light);
+            border-radius: 12px;
+        }
+
+        .input-mensagem {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-mensagem:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(65, 156, 100, 0.1);
+        }
+
+        .btn-enviar {
+            padding: 0 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-enviar:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .mensagem-hora {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .mensagem-enviada .mensagem-hora {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .mensagem-recebida .mensagem-hora {
+            color: var(--text-secondary);
+        }
+
+        .mensagem-acoes {
+            position: absolute;
+            right: 0.5rem;
+            top: 0.5rem;
+            display: none;
+            gap: 0.5rem;
+        }
+
+        .mensagem:hover .mensagem-acoes {
+            display: flex;
+        }
+
+        .btn-editar, .btn-deletar {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.25rem;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .mensagem-enviada .btn-editar,
+        .mensagem-enviada .btn-deletar {
+            color: white;
+        }
+
+        .btn-editar:hover, .btn-deletar:hover {
+            color: var(--primary-color);
+        }
+
+        .mensagem-enviada .btn-editar:hover,
+        .mensagem-enviada .btn-deletar:hover {
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-content h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .modal-content textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin: 1rem 0;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .modal-acoes {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .modal-acoes button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-acoes button:first-child {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-acoes button:last-child {
+            background-color: var(--background-light);
+            color: var(--text-primary);
+        }
+
+        .modal-acoes button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 0;
+                padding: 1rem;
+                border-radius: 0;
+            }
+
+            .mensagens {
+                height: calc(100vh - 200px);
+            }
+
+            .mensagem {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../../partials/navbar') %>
+    
+    <div class="chat-container">
+        <h2>Chat com <%= outroUsuario.Dono ? outroUsuario.Dono.nome : outroUsuario.usuario_usuario %></h2>
+        
+        <div class="mensagens" id="mensagens">
+            <% mensagens.forEach(msg => { 
+                if (!msg.deletada) { %>
+                    <div class="mensagem <%= msg.remetente_id === usuarioAtual.id ? 'mensagem-enviada' : 'mensagem-recebida' %>" 
+                         data-id="<%= msg.id %>">
+                        <div class="mensagem-conteudo"><%= msg.conteudo %></div>
+                        <div class="mensagem-info">
+                            <span class="mensagem-hora">
+                                <%= new Date(msg.data_envio).toLocaleTimeString() %>
+                                <% if (msg.editada) { %>(editada)<% } %>
+                            </span>
+                            <% if (msg.remetente_id === usuarioAtual.id) { %>
+                                <div class="mensagem-acoes">
+                                    <button class="btn-editar" onclick="editarMensagem(<%= msg.id %>)">
+                                        <i class="ri-edit-line"></i>
+                                    </button>
+                                    <button class="btn-deletar" onclick="deletarMensagem(<%= msg.id %>)">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="mensagem-deletada">Mensagem apagada</div>
+                <% } %>
+            <% }) %>
+        </div>
+
+        <form class="form-mensagem" id="form-mensagem">
+            <input type="hidden" id="destinatario-id" value="<%= outroUsuario.id %>">
+            <input type="text" class="input-mensagem" id="input-mensagem" placeholder="Digite sua mensagem...">
+            <button type="submit" class="btn-enviar">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        const mensagensDiv = document.getElementById('mensagens');
+        const formMensagem = document.getElementById('form-mensagem');
+        const inputMensagem = document.getElementById('input-mensagem');
+        const destinatarioId = document.getElementById('destinatario-id').value;
+        let ws;
+
+        function conectarWebSocket() {
+            ws = new WebSocket(`ws://${window.location.host}`);
+            
+            ws.onopen = () => {
+                console.log('Conexão WebSocket estabelecida');
+                ws.send(JSON.stringify({
+                    type: 'init',
+                    userId: '<%= usuarioAtual.id %>'
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                console.log('Mensagem recebida:', data);
+
+                if (data.type === 'message') {
+                    if (data.mensagem.remetente_id !== '<%= usuarioAtual.id %>') {
+                        adicionarMensagem(data.mensagem, false);
+                    }
+                } else if (data.type === 'message_sent') {
+                    adicionarMensagem(data.mensagem, true);
+                }
+            };
+
+            ws.onclose = () => {
+                console.log('Conexão WebSocket fechada. Tentando reconectar...');
+                setTimeout(conectarWebSocket, 3000);
+            };
+        }
+
+        function adicionarMensagem(mensagem, isEnviada) {
+            const novaMensagem = document.createElement('div');
+            novaMensagem.className = `mensagem ${isEnviada ? 'mensagem-enviada' : 'mensagem-recebida'}`;
+            novaMensagem.innerHTML = `
+                <div class="mensagem-conteudo">${mensagem.conteudo}</div>
+                <div class="mensagem-hora">${new Date(mensagem.data_envio).toLocaleTimeString()}</div>
+            `;
+            mensagensDiv.appendChild(novaMensagem);
+            mensagensDiv.scrollTop = mensagensDiv.scrollHeight;
+        }
+
+        formMensagem.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const conteudo = inputMensagem.value.trim();
+            if (!conteudo) return;
+
+            ws.send(JSON.stringify({
+                type: 'message',
+                destinatario_id: destinatarioId,
+                remetente_id: '<%= usuarioAtual.id %>',
+                conteudo: conteudo
+            }));
+            inputMensagem.value = '';
+        });
+
+        conectarWebSocket();
+
+        let mensagemEditandoId = null;
+
+        function editarMensagem(id) {
+            const mensagemDiv = document.querySelector(`.mensagem[data-id="${id}"]`);
+            const conteudo = mensagemDiv.querySelector('.mensagem-conteudo').textContent;
+            
+            document.getElementById('editar-mensagem-texto').value = conteudo;
+            document.getElementById('modal-editar').style.display = 'block';
+            mensagemEditandoId = id;
+        }
+
+        async function salvarEdicao() {
+            if (!mensagemEditandoId) return;
+
+            const novoConteudo = document.getElementById('editar-mensagem-texto').value.trim();
+            if (!novoConteudo) return;
+
+            try {
+                const response = await fetch(`/mensagem/${mensagemEditandoId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ conteudo: novoConteudo })
+                });
+
+                if (response.ok) {
+                    const mensagemDiv = document.querySelector(`.mensagem[data-id="${mensagemEditandoId}"]`);
+                    mensagemDiv.querySelector('.mensagem-conteudo').textContent = novoConteudo;
+                    mensagemDiv.querySelector('.mensagem-hora').textContent += ' (editada)';
+                    
+                    ws.send(JSON.stringify({
+                        type: 'edit',
+                        mensagemId: mensagemEditandoId,
+                        novoConteudo,
+                        destinatario_id: destinatarioId
+                    }));
+                }
+            } catch (error) {
+                console.error('Erro ao editar mensagem:', error);
+                alert('Erro ao editar mensagem');
+            }
+
+            fecharModal();
+        }
+
+        async function deletarMensagem(id) {
+            if (!confirm('Tem certeza que deseja apagar esta mensagem?')) return;
+
+            try {
+                const response = await fetch(`/mensagem/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    const mensagemDiv = document.querySelector(`.mensagem[data-id="${id}"]`);
+                    mensagemDiv.innerHTML = '<div class="mensagem-deletada">Mensagem apagada</div>';
+                    
+                    ws.send(JSON.stringify({
+                        type: 'delete',
+                        mensagemId: id,
+                        destinatario_id: destinatarioId
+                    }));
+                }
+            } catch (error) {
+                console.error('Erro ao deletar mensagem:', error);
+                alert('Erro ao deletar mensagem');
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modal-editar').style.display = 'none';
+            mensagemEditandoId = null;
+        }
+    </script>
+
+    <div id="modal-editar" class="modal">
+        <div class="modal-content">
+            <h3>Editar mensagem</h3>
+            <textarea id="editar-mensagem-texto"></textarea>
+            <div class="modal-acoes">
+                <button onclick="salvarEdicao()">Salvar</button>
+                <button onclick="fecharModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

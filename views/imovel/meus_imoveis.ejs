@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Imóveis</title>
+    <%- include('../../partials/navbar.ejs')%>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #ffffff; 
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50; 
+            margin-bottom: 20px;
+        }
+
+        div.imovel {
+            background-color: #ffffff; 
+            border: 1px solid #ced4da; 
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px auto;
+            max-width: 300px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s; 
+        }
+
+        div.imovel:hover {
+            transform: scale(1.02); 
+        }
+
+        img {
+            display: block;
+            margin: 0 auto 10px auto;
+            border-radius: 5px;
+        }
+
+        h3 {
+            text-align: center;
+            color: #27ae60; 
+            margin: 10px 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #000000; 
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        a:hover {
+            color: #1c6691; 
+        }
+
+        p {
+            text-align: center;
+            color: #777; 
+        }
+
+        .voltar-home {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .voltar-home a {
+            font-weight: bold;
+            color: #27ae60; 
+        }
+
+        .voltar-home a:hover {
+            color: #1e7a53; 
+        }
+    </style>
+</head>
+<body>
+    <br><br><br>
+    
+    <h1>Meus Imóveis</h1>
+
+    <% if (imoveis && imoveis.length > 0) { %>
+        <% imoveis.forEach(imovel => { %>
+            <div class="imovel">
+                <a href="/imovel/<%= imovel.id_imovel %>">
+                    <img src="/imagem-imovel/<%= imovel.id_imovel %>" 
+                         alt="<%= imovel.nome_imovel %>"
+                         onerror="this.src='/uploads/KAFFEE.png'"
+                         width="200">
+                    <h3><%= imovel.nome_imovel || 'Imóvel sem nome' %></h3>
+                </a>
+                <a href="/editar-imovel/<%= imovel.id_imovel %>">Editar Detalhes</a>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>Nenhum imóvel encontrado.</p>
+    <% } %>
+
+    <div class="voltar-home">
+        <a href="/">Voltar para Home</a>
+    </div>
+</body>
+</html> 

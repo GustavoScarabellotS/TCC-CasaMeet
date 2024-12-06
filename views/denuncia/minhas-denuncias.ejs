@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Denúncias</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <%- include('../../partials/navbar', { usuario: usuario }) %>  
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 1100px;
+            margin: 20px auto; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }  
+        
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        
+        .denuncia-card {
+            background-color: #f1f8e9;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #43a047;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .denuncia-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .denuncia-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .denuncia-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .status-aberta {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .status-fechada {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        
+        .denuncia-info {
+            margin-bottom: 1.5rem;
+        }
+        
+        .denuncia-info p {
+            margin: 0.5rem 0;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .denuncia-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.2rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-size: 1.2rem;
+            width: 100%; 
+        }
+        
+        .back-link {
+            text-align: center; 
+            margin-top: 30px;
+        }
+        
+        .back-link a {
+            font-weight: bold;
+            color: #27ae60;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+        
+        .back-link a:hover {
+            color: #1e7a53; 
+            text-decoration: underline; 
+        }
+
+        .action-button {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 0.75rem 1.5rem;
+            background-color: #43a047;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            align-items: center;
+            width: auto;
+            align-self: center; /
+
+        }
+
+        .action-buttonDe {
+            display: inline-block; 
+            margin-top: 30px; 
+            padding: 0.75rem 1.5rem; 
+            background-color: #ffffff; 
+            color: #43a047; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            transition: background-color 0.3s ease; 
+            text-align: center; 
+            width: auto; 
+            align-self: center; 
+        }
+        
+        
+        
+        .action-button-report:hover {
+            background-color: #388e3c;
+        }
+        
+        
+    </style>
+    
+    
+</head>
+<body>
+   
+    <br>
+    <div class="container">
+        <h1><i class="fas fa-list-alt icon"></i> Minhas Denúncias</h1>
+
+        <% if (denuncias && denuncias.length > 0) { %>
+            <% denuncias.forEach(denuncia => { %>
+                <div class="denuncia-card">
+                    <div class="denuncia-header">
+                        <span class="denuncia-status status-<%= denuncia.status %>">
+                            <%= denuncia.status %>
+                        </span>
+                        <span><i class="far fa-calendar-alt"></i> <%= denuncia.datadenuncia %></span>
+                    </div>
+                    
+                    <div class="denuncia-info">
+                        <p><strong><i class="fas fa-tag"></i> Categoria:</strong> <%= denuncia.categoria %></p>
+                        <p><strong><i class="fas fa-home"></i> Imóvel:</strong> <%= denuncia.Imovel ? denuncia.Imovel.nome_imovel : 'N/A' %></p>
+                        <p><strong><i class="fas fa-align-left"></i> Descrição:</strong> <%= denuncia.descricao %></p>
+                        
+                    </div>
+                    <div class="denuncia-actions">
+                        <a href="/denuncia/<%= denuncia.id %>" class="action-buttonDe">Ver Detalhes</a>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="empty-state">
+                <br><i class="fas fa-inbox"></i>
+                <br>
+                <p>Você ainda não fez nenhuma denúncia.</p>
+                <br>
+                <a href="/report" class="action-button">Fazer uma denúncia</a>
+            </div>
+        <% } %>
+    </div>
+    
+    <a href="/" class="back-link">Voltar para a página inicial</a>
+</body>
+</html>

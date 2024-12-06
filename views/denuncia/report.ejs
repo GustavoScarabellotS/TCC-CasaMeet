@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar Denúncia</title>
+    <%- include('../../partials/navbar.ejs')%>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #43a047; 
+            --secondary-color: #388e3c; 
+            --background-color: #f1f8e9; 
+            --text-color: #2c3e50; 
+            --error-color: #e74c3c;
+            --success-color: #43a047;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body .container {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 50vh;
+            background-color: var(--background-color);
+            width: 100%;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 40px; 
+            text-align: center; 
+            justify-content: center;
+            
+        }
+
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            
+        }
+
+        .success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        .error {
+            background-color: var(--error-color);
+            color: #fff;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        textarea, select, input[type="number"] {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%; 
+            max-width: 500px; 
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 12 12'%3E%3Cpath d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        input[type="submit"] {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%; 
+            max-width: 500px; 
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            textarea, select, input[type="number"] {
+                font-size: 14px;
+            }
+
+            input[type="submit"], textarea, select, input[type="number"] {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enviar Denúncia</h1>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="message success">Denúncia enviada com sucesso!</div>
+        <% } %>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="message error">Erro ao enviar denúncia. Por favor, tente novamente.</div>
+        <% } %>
+
+        <form action="/report" method="POST">
+            <label for="descricao">Descrição da denúncia:</label>
+            <textarea id="descricao" name="descricao" rows="4" required></textarea>
+
+            <label for="categoria">Categoria:</label>
+            <select id="categoria" name="categoria" required>
+                <option value="">Selecione uma categoria</option>
+                <option value="fraude">Fraude</option>
+                <option value="linguagem ofensiva">Linguagem ofensiva</option>
+                <option value="discriminação">Discriminação</option>
+                <option value="outros">Outros</option>
+            </select>
+
+            <label for="id_imovel">ID do Imóvel:</label>
+            <input type="number" id="id_imovel" name="id_imovel" min="1">
+
+            <input type="submit" value="Enviar Denúncia">
+        </form>
+
+        <a href="/" class="back-link">Voltar para a página inicial</a>
+    </div>
+</body>
+</html>

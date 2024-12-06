@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Denúncia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f0f5f1;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #d4e6d9;
+        }
+        
+        th {
+            background-color: #e8f5e9;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .status {
+            font-weight: bold;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .status-aberta {
+            background-color: #4caf50;
+        }
+        
+        .status-fechada {
+            background-color: #607d8b;
+        }
+        
+        form {
+            margin-bottom: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #a5d6a7;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        button {
+            background-color: #43a047;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #388e3c;
+        }
+        
+        .comment {
+            background-color: #f1f8e9;
+            border: 1px solid #c8e6c9;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .comment p {
+            margin: 0 0 10px 0;
+        }
+        
+        .comment small {
+            color: #616161;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #43a047;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .icon {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-exclamation-circle icon"></i>Detalhes da Denúncia</h1>
+
+        <table>
+            <tr>
+                <th><i class="fas fa-hashtag icon"></i>ID</th>
+                <td><%= denuncia.id %></td>
+            </tr>
+            <tr>
+                <th><i class="fas fa-align-left icon"></i>Descrição</th>
+                <td><%= denuncia.descricao %></td>
+            </tr>
+            <tr>
+                <th><i class="fas fa-tag icon"></i>Categoria</th>
+                <td><%= denuncia.categoria %></td>
+            </tr>
+            <tr>
+                <th><i class="fas fa-envelope icon"></i>E-mail do Usuário</th>
+                <td><%= denuncia.usuario_email %></td>
+            </tr>
+            <tr>
+                <th><i class="far fa-calendar-alt icon"></i>Data da Denúncia</th>
+                <td><%= denuncia.datadenuncia %></td>
+            </tr>
+            <tr>
+                <th><i class="fas fa-home icon"></i>ID do Imóvel</th>
+                <td><%= denuncia.fk_id_imovel || 'N/A' %></td>
+            </tr>
+            <tr>
+                <th><i class="fas fa-info-circle icon"></i>Status</th>
+                <td><span class="status <%= denuncia.status === 'aberta' ? 'status-aberta' : 'status-fechada' %>"><%= denuncia.status %></span></td>
+            </tr>
+        </table>
+
+        <% if (denuncia.status === 'aberta') { %>
+            <h2><i class="fas fa-comment-alt icon"></i>Adicionar Comentário</h2>
+            <form action="/denuncia/<%= denuncia.id %>/comentario" method="POST">
+                <textarea name="comentario" required placeholder="Digite seu comentário aqui..."></textarea>
+                <br><br>
+                <button type="submit"><i class="fas fa-paper-plane icon"></i>Enviar Comentário</button>
+            </form>
+
+            <% if (usuario.classficacao === '2' || usuario.classficacao === '1') { %>
+                <h2><i class="fas fa-cogs icon"></i>Ações</h2>
+                <form action="/denuncia/<%= denuncia.id %>/fechar" method="POST">
+                    <button type="submit"><i class="fas fa-lock icon"></i>Fechar Denúncia</button>
+                </form>
+            <% } %>
+        <% } else { %>
+            <p><i class="fas fa-lock icon"></i>Esta denúncia está fechada.</p>
+        <% } %>
+
+        <h2><i class="fas fa-comments icon"></i>Comentários</h2>
+        <% if (denuncia.Comentarios && denuncia.Comentarios.length > 0) { %>
+            <% denuncia.Comentarios.forEach(comentario => { %>
+                <div class="comment">
+                    <p><strong><i class="fas fa-user icon"></i><%= comentario.Usuario.usuario_usuario %>:</strong> <%= comentario.conteudo %></p>
+                    <small><i class="far fa-clock icon"></i><%= new Date(comentario.createdAt).toLocaleString() %></small>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>Nenhum comentário ainda.</p>
+        <% } %>
+
+        <% if (usuario.classficacao === '1' || usuario.classficacao === '2') { %>
+            <a href="/denuncia" class="back-link"><i class="fas fa-arrow-left icon"></i>Voltar para a lista de denúncias</a>
+        <% } else { %>
+            <a href="/minhas-denuncias" class="back-link"><i class="fas fa-arrow-left icon"></i>Voltar para minhas denúncias</a>
+        <% } %>
+    </div>
+</body>
+</html>

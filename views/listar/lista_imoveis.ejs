@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Imóveis</title>
+    <%- include('../../partials/navbar.ejs')%>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+        }
+
+        body {
+            background: white; 
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            height: calc(100vh - 200px);
+        }
+
+        .no-results {
+            text-align: center; 
+            color: #666; 
+            font-size: 1.5rem; 
+            margin: 20px 0; 
+            padding: 1rem; 
+            background-color: #f9f9f9; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        }
+
+        #map {
+            flex: 2;
+            height: 100%;
+            min-height: 900px;
+            border-radius: var(--border-radius);
+        }
+
+        #imoveis-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            max-height: 100%;
+        }
+
+        .search-section {
+            padding: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+
+        #endereco-busca {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+
+        #endereco-busca:focus {
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+        }
+
+        #buscar-endereco {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #buscar-endereco:hover {
+            background-color: var(--secondary-color);
+        }
+
+        #buscar-endereco:active {
+            transform: translateY(-50%) scale(0.98);
+        }
+
+        .filter-chips {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-chip {
+            padding: 8px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .imovel-card {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .imovel-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .imovel-image-container {
+            width: 200px;
+            height: 200px;
+        }
+
+        .imovel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .imovel-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .imovel-info h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .imovel-categoria {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .imovel-endereco {
+            color: #888;
+            margin: 5px 0;
+        }
+
+        .imovel-detalhes {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .imovel-preco {
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 10px 0;
+        }
+
+        .btn-ver-mais {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            transition: background-color 0.3s;
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-ver-mais:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-ver-mais:active {
+            transform: scale(0.98);
+        }
+
+        #imoveis-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #imoveis-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        #imoveis-list::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        #imoveis-list::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .leaflet-popup-content-wrapper {
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .leaflet-popup-content {
+            margin: 0;
+            width: 300px !important;
+        }
+
+        .popup-content {
+            padding: 15px;
+        }
+
+        .popup-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .popup-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .popup-details {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .popup-price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .popup-button {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" id="endereco-busca" placeholder="Pesquisar localização...">
+                <button id="buscar-endereco">Buscar</button>
+            </div>
+            <div class="filter-chips">
+                <button class="filter-chip" data-categoria="">Todos</button>
+                <button class="filter-chip" data-categoria="casa">Casa</button>
+                <button class="filter-chip" data-categoria="casadepraia">Casa de Praia</button>
+                <button class="filter-chip" data-categoria="apartamento">Apartamento</button>
+                <button class="filter-chip" data-categoria="terreno">Terreno</button>
+                <button class="filter-chip" data-categoria="kitnet">Kitnet</button>
+                <button class="filter-chip" data-categoria="armazem">Armazém</button>
+                <button class="filter-chip" data-categoria="comercial">Comercial</button>
+            </div>
+        </div>
+
+        <div class="content-container">
+            <div id="imoveis-list"></div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const map = L.map('map').setView([-28.6919, -49.3919], 10);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+    
+            let markers = [];
+            let activeFilter = '';
+            let highlightedMarker = null; 
+            let searchMarker = null;
+
+            function formatarCEP(cep) {
+                cep = cep.replace(/\D/g, '');
+            
+                if (cep.length <= 5) {
+                    return cep.replace(/(\d{5})(\d{0,3})/, '$1-$2');
+                }
+                return cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+            }
+
+            function createImovelCard(imovel) {
+                const valor = typeof imovel.valor === 'string' ? 
+                    parseFloat(imovel.valor.replace(/\D/g, '')) : 
+                    parseFloat(imovel.valor);
+
+                const valorFormatado = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(valor);
+            
+                return `
+                    <div class="imovel-card" data-id="${imovel.id_imovel}" data-lat="${imovel.latitude}" data-lon="${imovel.longitude}">
+                        <div class="imovel-image-container">
+                            <img src="${imovel.imagemUrl}" class="imovel-image" alt="${imovel.nome_imovel}" onerror="this.src='/uploads/KAFFEE.png'">
+                        </div>
+                        <div class="imovel-info">
+                            <h3>${imovel.nome_imovel || 'Sem nome'}</h3>
+                            <p class="imovel-endereco">${formatarCEP(imovel.cep) || 'Endereço não informado'}</p>
+                            <p class="imovel-detalhes">🛏️ ${imovel.quartos || '0'}  | 🚿 ${imovel.banheiros || '0'}  | 🏢 ${imovel.andares || '0'}</p>
+                            <div class="imovel-preco">${valorFormatado}</div>
+                            <a href="/imovel/${imovel.id_imovel}" class="btn-ver-mais">Ver mais</a>
+                        </div>
+                    </div>
+                `;
+            }
+            
+    
+            function createPopupContent(imovel) {
+                const valorFormatado = new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(imovel.valor);
+            
+                return `
+                    <div class="popup-content"> <center>
+                        <img src="${imovel.imagemUrl}" alt="${imovel.nome_imovel}" class="popup-image">
+                        <div class="popup-info">
+                            <h3>${imovel.nome_imovel}</h3>
+                            <p>${formatarCEP(imovel.cep)}</p>
+                            <p>${valorFormatado}</p>
+                            <a href="/imovel/${imovel.id_imovel}" class="popup-button">Ver detalhes</a>
+                        </center>
+                    </div>
+                    </div>
+                `;
+            }
+    
+            function carregarImoveis(categoria = '') {
+                markers.forEach(marker => map.removeLayer(marker));
+                markers = [];
+                
+                document.getElementById('imoveis-list').innerHTML = '';
+    
+                fetch(`/lista-imovel${categoria ? `?categoria=${categoria}` : ''}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const imoveisList = document.getElementById('imoveis-list');
+                        
+                        if (data.length === 0) {
+                            imoveisList.innerHTML = '<p class="no-results">Nenhum imóvel encontrado</p>';
+                            return;
+                        }
+
+                        data.forEach(imovel => {
+                            imoveisList.innerHTML += createImovelCard(imovel);
+
+                            if (imovel.latitude && imovel.longitude) {
+                                const marker = L.marker([imovel.latitude, imovel.longitude])
+                                    .addTo(map)
+                                    .bindPopup(createPopupContent(imovel));
+                                markers.push(marker);
+                            }
+                        });
+
+                        document.querySelectorAll('.imovel-card').forEach(card => {
+                            card.addEventListener('click', function() {
+                                const lat = parseFloat(this.dataset.lat);
+                                const lon = parseFloat(this.dataset.lon);
+                                highlightProperty(lat, lon);
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Erro ao buscar imóveis:', error);
+                        imoveisList.innerHTML = '<p class="error-message">Erro ao carregar imóveis</p>';
+                    });
+            }
+    
+            function highlightProperty(lat, lon, id) {
+                map.setView([lat, lon], 15);
+                
+                const marker = markers.find(m => m.getLatLng().lat === lat && m.getLatLng().lng === lon);
+                if (marker) {
+                    marker.openPopup();
+                }
+            }
+
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    carregarImoveis(this.dataset.categoria);
+                });
+            });
+
+            function buscarEndereco() {
+                const endereco = document.getElementById('endereco-busca').value;
+                if (!endereco) return;
+
+                if (searchMarker) {
+                    map.removeLayer(searchMarker);
+                }
+
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(endereco)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            const lat = parseFloat(data[0].lat);
+                            const lon = parseFloat(data[0].lon);
+                            
+                            const redIcon = L.icon({
+                                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                iconSize: [25, 41],
+                                iconAnchor: [12, 41],
+                                popupAnchor: [1, -34],
+                                shadowSize: [41, 41]
+                            });
+
+                            searchMarker = L.marker([lat, lon], {icon: redIcon})
+                                .addTo(map)
+                                .bindPopup(`<b>Endereço Pesquisado:</b><br>${endereco}`);
+
+                            map.setView([lat, lon], 15);
+                            
+                            searchMarker.openPopup();
+                        } else {
+                            alert('Endereço não encontrado');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro na busca:', error);
+                        alert('Erro ao buscar endereço');
+                    });
+            }
+
+            document.getElementById('buscar-endereco').addEventListener('click', buscarEndereco);
+            document.getElementById('endereco-busca').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    buscarEndereco();
+                }
+            });
+
+            carregarImoveis();
+        });
+    </script>
+</body>
+</html>

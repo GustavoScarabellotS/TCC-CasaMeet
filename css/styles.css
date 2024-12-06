@@ -1,0 +1,27 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600&display=swap");
+
+
+#map {
+    height: 400px;
+    width: 600px;
+    margin-top: 20px;
+  }
+  #output {
+    margin-top: 20px;
+  }
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+img {
+    max-width: 100px;
+    max-height: 100px;
+}

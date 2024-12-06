@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Denúncias</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #a5d6a7 100%);
+            margin: 0;
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: top; 
+            align-items: center; 
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        
+        thead {
+            background-color: #2e7d32;
+            color: #e8f5e9;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        th {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        tbody tr {
+            background-color: #f1f8e9;
+            transition: all 0.3s ease;
+        }
+        
+        tbody tr:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        td {
+            border-top: 1px solid #c8e6c9;
+        }
+        
+        .action-link {
+            color: #43a047;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .action-link:hover {
+            color: #388e3c;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px; 
+            padding: 0.75rem 1.5rem;
+            background-color: #43a047;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background-color: #388e3c;
+        }
+        
+        .icon {
+            margin-right: 0.5rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-exclamation-circle icon"></i>Painel de Denúncias Abertas</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th><i class="fas fa-hashtag icon"></i>ID</th>
+                    <th><i class="fas fa-tag icon"></i>Categoria</th>
+                    <th><i class="fas fa-user icon"></i>Usuário Denunciante</th>
+                    <th><i class="far fa-calendar-alt icon"></i>Data</th>
+                    <th><i class="fas fa-cogs icon"></i>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% denuncias.forEach(denuncia => { %>
+                    <tr>
+                        <td><%= denuncia.id %></td>
+                        <td><%= denuncia.categoria %></td>
+                        <td><%= denuncia.Usuario ? denuncia.Usuario.usuario_usuario : 'N/A' %></td>
+                        <td><%= denuncia.datadenuncia %></td>
+                        <td><a href="/denuncia/<%= denuncia.id %>" class="action-link"><i class="fas fa-eye icon"></i>Ver detalhes</a></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    
+    <a href="/" class="back-link"><i class="fas fa-home icon"></i>Voltar para a página inicial</a>
+</body>
+</html>
