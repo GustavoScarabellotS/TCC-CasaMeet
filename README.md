@@ -7,7 +7,7 @@ O sistema elimina a intermediação tradicional de imobiliárias, proporcionando
 Linguagens Utilizadas 🖥️
 JavaScript - Linguagem principal para programação do lado do cliente e servidor.
 HTML - Utilizada para estruturar as páginas web.
-CSS - Utilizada para estilização e design responsivo.
+CSS - Utilizada para estilização e design.
 SQL - Linguagem de consulta para manipulação do banco de dados.
 
 Ferramentas Utilizadas 🧰
